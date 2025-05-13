@@ -36,7 +36,7 @@ wss.on("connection", (socket: WebSocket) => {
         isProcessingRequest = true;
 
         if (parseMsg.type === 'create-room') {
-            // Creating Player1 that created the room 
+            // initlaise deck class for this game and distribute 1st player his cards
             const deck = new Deck()
             const cards: Card[] = deck.getPlayerCardset()
             const playerName = parseMsg.name
@@ -47,11 +47,12 @@ wss.on("connection", (socket: WebSocket) => {
             playerId = 1
             const player = { name: playerName, cards, id: playerId }
 
-            // Creating room and saving its details in-memory
+            // Creating room and saving its details redis in-memory
             roomId = await createRoomId()
             const room = { players: [player], deck: deck }
             await setRedisRoom(roomId, room)
 
+            // Subscribing to redis messages for this room
             await subscriber.subscribe(roomId, (message: string, channel: any) => {
                 if (socket.readyState === WebSocket.OPEN) {
                     socket.send(message);
@@ -60,6 +61,7 @@ wss.on("connection", (socket: WebSocket) => {
                 }
             })
 
+            // subscirbing to messages only recieved by current player and not other players
             await subscriber.pSubscribe(`${roomId}*${playerId}`, (message: string, channel: any) => {
 
                 if (socket.readyState === WebSocket.OPEN) {
@@ -87,7 +89,7 @@ wss.on("connection", (socket: WebSocket) => {
             }
 
             roomId = joiningRroomId
-            // Creating and adding player that just joined
+            // Distribute ards cards to player that joined
             const cards = room.deck.getPlayerCardset()
             const playerName = parseMsg.name
             if (!playerName) {
@@ -98,6 +100,7 @@ wss.on("connection", (socket: WebSocket) => {
             room.players.push({ name: playerName, cards, id: playerId })
             await setRedisRoom(roomId, room)
 
+            // this player subscibes to room messages
             await subscriber.subscribe(roomId, (message: string, channel: any) => {
                 if (socket.readyState === WebSocket.OPEN) {
                     socket.send(message);
@@ -105,6 +108,8 @@ wss.on("connection", (socket: WebSocket) => {
                     console.log(`Client ${playerId} is not connected or the connection is not open.`);
                 }
             })
+
+            // this player subscribes to messages only he recieves
             await subscriber.pSubscribe(`${roomId}*${playerId}`, (message: string, channel: any) => {
 
                 if (socket.readyState === WebSocket.OPEN) {

@@ -67,7 +67,7 @@ export default function Home() {
           <button className="w-fit mx-auto px-4 py-2 bg-black">Join Room</button>
         </div>
       </form>
-      <button className="border px-2.5 py-1.5 border-black" onClick={() => setshowCreateRoomPopup(true)}>Create Room</button>
+      <button className="border px-2.5 py-1.5 border-black text-black" onClick={() => setshowCreateRoomPopup(true)}>Create Room</button>
     </main>
   );
 }
