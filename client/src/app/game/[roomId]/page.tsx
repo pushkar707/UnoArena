@@ -122,12 +122,12 @@ const Page = () => {
 
         <div className='flex flex-col items-center'>
           <div>
-            <p className={`text-center font-medium text-lg mb-1 ${gameData.nextTurn === gameData.id && 'font-semibold underline'}`}>
+            <p className={`text-center font-medium text-lg mb-1 text-black ${gameData.nextTurn === gameData.id && 'font-semibold underline'}`}>
               {gameData.name}
             </p>
             {(!gameData.nextTurn && (gameData.id === 1)) ? <div className='flex flex-col items-center mb-2 gap-y-1.5'>
               <button onClick={startGame} className='px-2 py-1 bg-blue-500 text-white rounded'>Start game</button>
-              <p>Click <span className='underline cursor-pointer' onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Copied to clipbaord!') }}>here</span> to copy room link or ask your friends to join this roomId: {gameData.roomId}</p>
+              <p className='text-black'>Click <span className='underline cursor-pointer' onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Copied to clipbaord!') }}>here</span> to copy room link or ask your friends to join this roomId: {gameData.roomId}</p>
             </div> : ''}
           </div>
           <div className='flex'>
