@@ -11,7 +11,7 @@ dotenv.config()
 export const redisClient = createClient({ url: process.env.REDIS_URL })
 const publisher = createClient({ url: process.env.REDIS_URL })
 const subscriber = createClient({ url: process.env.REDIS_URL })
-const connections:any[] = []
+const connections: any[] = []
 const server = http.createServer((req: any, res: any) => {
     res.end(JSON.stringify(connections))
 })
@@ -77,15 +77,15 @@ wss.on("connection", (socket: WebSocket) => {
         else if (parseMsg.type === 'join-room') {
             const joiningRroomId = parseMsg.roomId
             // validate roomId
-            const room:Room = await getRoomFromId(joiningRroomId)
+            const room: Room = await getRoomFromId(joiningRroomId)
             if (!room || room.hasGameStarted) {
                 isProcessingRequest = false
                 return socket.send(JSON.stringify({ type: 'error', message: 'Invalid room id' }))
             }
 
-            if(room.players.length === 4){
+            if (room.players.length === 4) {
                 isProcessingRequest = false
-                return socket.send(JSON.stringify({type: 'error', message: 'Maximum 4 players supported'}))
+                return socket.send(JSON.stringify({ type: 'error', message: 'Maximum 4 players supported' }))
             }
 
             roomId = joiningRroomId
@@ -274,13 +274,13 @@ wss.on("connection", (socket: WebSocket) => {
             playerId = parseInt(parseMsg.prevPlayerId)
 
             const room: Room = await getRoomFromId(roomId)
-            if (!room){
+            if (!room) {
                 isProcessingRequest = false
                 return socket.send(JSON.stringify({ type: 'error', message: 'Could not find the game, please start a new game' }))
             }
 
             const player = room.players.find(pl => pl.id == playerId)
-            if (!player){
+            if (!player) {
                 isProcessingRequest = false
                 return socket.send(JSON.stringify({ type: 'error', message: 'Invalid reconnect request' }))
             }
@@ -335,7 +335,7 @@ const startServer = async () => {
     await redisClient.connect();
     await publisher.connect()
     await subscriber.connect()
-    const PORT =  process.env.PORT || 3000
+    const PORT = process.env.PORT || 3000
     server.listen(PORT, () => {
         console.log("Web socket server running on port " + PORT);
     })
@@ -344,8 +344,8 @@ const startServer = async () => {
 startServer()
 
 // PROJECT TODOS
-// Create new redis map for storing deck of a game, in main room just store 10 cards from deck to enable drawing of cards. Whenever cards in room fall below 4 get 5 more cards from the deck. this way your in every move I can remove more than 3.5kb overhead in both fetching and writing the room data in every move. 
-// another optimization can be having sepearet lists for player's cards, so that I only acce cards of players needed, however that would increase number of operation by 3 to 4 times per move 
+// Create new redis map for storing deck of a game, in main room just store 10 cards from deck to enable drawing of cards. Whenever cards in room fall below 4 get 5 more cards from the deck. this way your in every move I can remove more than 3.5kb overhead in both fetching and writing the room data in every move.
+// another optimization can be having sepearet lists for player's cards, so that I only acce cards of players needed, however that would increase number of operation by 3 to 4 times per move
 // Debouncing on client to make make new request only once response received
 // Add voice call between sockets using webRTC
 // Add testing and monitoring for backend
@@ -353,7 +353,7 @@ startServer()
 
 // whats wrong in hosting online
 // reconnect not working as the when socket closes its data is deleted from redis, hence that socket isn't able to reconnect, what more is it starts a chain reaction where all the other sockets start trying to reconnect but aren't, they are one-by-one removed from redis, and finally the room is destroyed
-// socket connection get closed and reconnected if no communication happens for a few minutes -> SOLTUION -> ping/pong from application/server level every 30s, SOLUTION in hosting - increase load balancer idle timeout from 60s, avoid heavy termination of instances by ASG by selecting one availablity zone, and scaling policies, 
+// socket connection get closed and reconnected if no communication happens for a few minutes -> SOLTUION -> ping/pong from application/server level every 30s, SOLUTION in hosting - increase load balancer idle timeout from 60s, avoid heavy termination of instances by ASG by selecting one availablity zone, and scaling policies,
 
 // Geeneral problems in ci/cd hosting
 // CI/CD, updates are very hard

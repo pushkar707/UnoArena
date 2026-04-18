@@ -111,7 +111,7 @@ const Page = () => {
         </div>
 
         <div>
-          <p className={`text-center font-medium text-lg mb-2 ${gameData.nextTurn === gameData.id && 'font-semibold underline'}`}>
+          <p className={`text-center font-medium text-lg mb-2 text-black ${gameData.nextTurn === gameData.id && 'font-semibold underline'}`}>
             {gameData.name}
             {(!gameData.nextTurn && (gameData.id === 1)) ? <button onClick={startGame} className='px-2 py-1 bg-blue-500 text-white ml-3 rounded'>Start game</button> : ''}
           </p>
