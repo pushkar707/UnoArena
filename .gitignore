@@ -1,5 +1,5 @@
 node_modules
 tasks.txt
-outcome.txt
 *.pem
 dist
+outcome.txt
